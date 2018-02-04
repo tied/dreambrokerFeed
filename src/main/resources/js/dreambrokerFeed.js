@@ -1,12 +1,16 @@
 function showDBFeed(element, feedElement, numberOfItems, filter, searchString) {
 
     if (numberOfItems === undefined) numberOfItems = 20;
+    if (filter === undefined) filter = "Kaikki";
+    if (searchString !== undefined) {
+        var searchRe = new RegExp(searchString, 'gi');
+    } else {
+        searchString = "";
+    }
 
     var dbFeedData = JSON.parse(document.getElementById(feedElement).value);
 
-    console.log(dbFeedData);
-
-    // Create DOM elements
+    // Get the container for the macro's elements and if there are child elements, clear them
     var container = document.getElementById(element);
     while (container.firstChild) {
         container.removeChild(container.firstChild);
@@ -21,11 +25,8 @@ function showDBFeed(element, feedElement, numberOfItems, filter, searchString) {
         }
     }
 
-
     //sort the category array
     categories.sort();
-
-    console.log(categories);
 
     //create dom elements for category filtering selection
     var form = document.createElement('form');
@@ -45,28 +46,16 @@ function showDBFeed(element, feedElement, numberOfItems, filter, searchString) {
         if (event.keyCode == 13) {
             event.preventDefault();
             if (input.value != "") {
-                parseDBJsonFeed(feedURL, element, numberOfItems, select.options[select.selectedIndex].value, input.value);
+                showDBFeed(element, feedElement, numberOfItems, select.options[select.selectedIndex].value, input.value);
             } else {
-                parseDBJsonFeed(feedURL, element, numberOfItems, select.options[select.selectedIndex].value);
+                showDBFeed(element, feedElement, numberOfItems, select.options[select.selectedIndex].value);
             }
             return false;
         }
     };
 
-    var button = document.createElement('input');
-    button.id = "dbSearchButton";
-    button.className = 'button';
-    button.type = 'button';
-    button.value = 'Hae';
-
-    var clearSearchLink = document.createElement('a');
-    clearSearchLink.id = "dbClearSearch";
-    clearSearchLink.appendChild(document.createTextNode('Tyhjennä haku'));
-    clearSearchLink.onclick = function() {
-        if (filter != "") {
-            parseDBJsonFeed(feedURL, element, numberOfItems, select.options[select.selectedIndex].value)
-        }
-    };
+    var btnSearch = createSearchButton();
+    var clearSearchLink = createClearSearchLink();
 
     var select = document.createElement('select');
     select.className = 'select';
@@ -93,7 +82,7 @@ function showDBFeed(element, feedElement, numberOfItems, filter, searchString) {
     form.appendChild(labelSearch);
     form.appendChild(document.createElement('br'));
     form.appendChild(select);
-    form.appendChild(button);
+    form.appendChild(btnSearch);
     form.appendChild(input);
     container.appendChild(form);
     container.appendChild(clearSearchLink);
@@ -101,15 +90,22 @@ function showDBFeed(element, feedElement, numberOfItems, filter, searchString) {
 
     //add an event listener for the category filter
     select.onchange = function() {
-        parseDBJsonFeed(feedURL, element, numberOfItems, select.options[select.selectedIndex].value)
+        showDBFeed(element, feedElement, numberOfItems, select.options[select.selectedIndex].value);
     };
-    button.onclick = function() {
+
+    btnSearch.onclick = function() {
         if (input.value != "") {
-            parseDBJsonFeed(feedURL, element, numberOfItems, select.options[select.selectedIndex].value, input.value);
+            showDBFeed(element, feedElement, numberOfItems, select.options[select.selectedIndex].value, input.value);
         } else {
-            parseDBJsonFeed(feedURL, element, numberOfItems, select.options[select.selectedIndex].value);
+            showDBFeed(element, feedElement, numberOfItems, select.options[select.selectedIndex].value);
         }
 
+    };
+
+    clearSearchLink.onclick = function() {
+        if (filter != "") {
+            showDBFeed(element, feedElement, numberOfItems, select.options[select.selectedIndex].value);
+        }
     };
 
     thumbnails = document.createElement('div');
@@ -122,37 +118,62 @@ function showDBFeed(element, feedElement, numberOfItems, filter, searchString) {
 
     for (var i = 0; i < dbFeedData.items.length && thumbnails.childElementCount <= numberOfItems; i++) {
         var entry = dbFeedData.items[i];
-        //console.log(filter);
         if (filter == "Kaikki" || filter == "" || filter == entry.category) {
-            var tdThumb = document.createElement('div');
-            tdThumb.className = 'dbThumbnail';
-
-            var aImg = document.createElement('a');
-            var aText = document.createElement('a');
-            var imgThumb = document.createElement('img');
-            var p = document.createElement('p');
-            var br = document.createElement('br');
-            var infoText = document.createTextNode(entry.duration)
-
-            imgThumb.setAttribute('src', entry.thumbnail);
-            aImg.setAttribute('href', entry.link);
-            aText.setAttribute('href', entry.link);
-            aImg.setAttribute('target', '_blank');
-            aImg.appendChild(imgThumb);
-            tdThumb.appendChild(aImg);
-
-            //info text TD cell
-            aText.setAttribute('target', '_blank');
-            aText.appendChild(document.createTextNode(entry.title));
-            tdThumb.appendChild(p);
-            tdThumb.appendChild(aText);
-            tdThumb.appendChild(br);
-            tdThumb.appendChild(infoText);
-
-            //add TDs to TR
-            thumbnails.appendChild(tdThumb);
+            if (searchString != "") {
+                var searchResult = entry.title.match(searchRe);
+                if (searchResult != null && searchResult.length > 0) {
+                    createThumbnail(entry, thumbnails);
+                }
+            } else {
+                createThumbnail(entry, thumbnails);
+            }
         }
     }
 
     container.appendChild(thumbnails);
+
+    function createThumbnail(entry, tnContainer) {
+        var tdThumb = document.createElement('div');
+        tdThumb.className = 'dbThumbnail';
+
+        var aImg = document.createElement('a');
+        var aText = document.createElement('a');
+        var imgThumb = document.createElement('img');
+        var p = document.createElement('p');
+        var br = document.createElement('br');
+        var infoText = document.createTextNode(entry.duration)
+
+        imgThumb.setAttribute('src', entry.thumbnail);
+        aImg.setAttribute('href', entry.link);
+        aText.setAttribute('href', entry.link);
+        aImg.setAttribute('target', '_blank');
+        aImg.appendChild(imgThumb);
+        tdThumb.appendChild(aImg);
+
+        aText.setAttribute('target', '_blank');
+        aText.appendChild(document.createTextNode(entry.title));
+        tdThumb.appendChild(p);
+        tdThumb.appendChild(aText);
+        tdThumb.appendChild(br);
+        tdThumb.appendChild(infoText);
+
+        tnContainer.appendChild(tdThumb);
+    }
+
+    function createSearchButton() {
+        var button = document.createElement('input');
+        button.id = "dbSearchButton";
+        button.className = 'button';
+        button.type = 'button';
+        button.value = 'Hae';
+        return button;
+    }
+
+    function createClearSearchLink() {
+        var clearSearchLink = document.createElement('a');
+        clearSearchLink.id = "dbClearSearch";
+        clearSearchLink.appendChild(document.createTextNode('Tyhjennä haku'));
+        return clearSearchLink;
+    }
+
 }

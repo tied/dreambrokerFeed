@@ -1,0 +1,10 @@
+#dreambroker-feed .dbThumbnail {
+	display:inline-block;
+	margin:20px;
+	width:235px;
+	vertical-align: top;
+}
+
+#dreambroker-feed #dbSearchLabel, #dbSearchButton, #dbSearchInput, #dbClearSearch {
+	float:right;
+}

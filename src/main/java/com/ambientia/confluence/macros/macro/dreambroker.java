@@ -45,6 +45,8 @@ public class dreambroker implements Macro {
 	
 		Map context = MacroUtils.defaultVelocityContext();
     	context.put("jsonFeed", dbJson);
+    	if (map.get("Amount") != null) context.put("limit", map.get("Amount"));
+    	if (map.get("DefaultCategory") != null) context.put("defaultcategory", map.get("DefaultCategory"));
     	return VelocityUtils.getRenderedTemplate("/templates/dreambroker.vm", context);
     
     }

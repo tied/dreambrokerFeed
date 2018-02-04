@@ -25,11 +25,9 @@
         <description key="dreambroker.macro.desc" />
             <category name="formatting" />
             <parameters>
-                <parameter name="Url" type="string" required="true" desc="URL of Dreambroker channel JSON" />
-                <parameter name="Amount" type="int" required="true" desc="Amount of videos to show" />
+                <parameter name="Url" type="string" required="true" />
+                <parameter name="Amount" type="int" required="true" />
                 <parameter name="DefaultCategory" type="string" required="false" desc="Default category to display" />
-                <parameter name="ShowFilter" type="boolean" required="false" desc="Show category fitler" />
-                <parameter name="ShowSearch" type="boolean" required="false" desc="Show search box" />
 
             </parameters>
 

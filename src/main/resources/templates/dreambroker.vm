@@ -1,5 +1,13 @@
 #requireResource("com.ambientia.confluence.macros.dreambrokerFeed:dreambrokerFeed-resources")
 
+#if ( !$defaultcategory )
+	#set ($defaultcategory = "Kaikki")
+#end
+
+#if ( !$limit )
+	#set ($limit = 50)
+#end
+
 <div id="dreambroker-feed">
 </div>
 
@@ -7,7 +15,6 @@
             <input type="hidden" id="dbJSONFeed" value="$jsonFeed">
     </fieldset>
 
-
 <script>
-showDBFeed('dreambroker-feed', 'dbJSONFeed');
+showDBFeed('dreambroker-feed', 'dbJSONFeed', $limit, "$defaultcategory");
 </script>
