@@ -1,0 +1,38 @@
+<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2">
+    <plugin-info>
+        <description>${project.description}</description>
+        <version>${project.version}</version>
+        <vendor name="${project.organization.name}" url="${project.organization.url}" />
+        <param name="plugin-icon">images/pluginIcon.png</param>
+        <param name="plugin-logo">images/pluginLogo.png</param>
+    </plugin-info>
+
+    <!-- add our i18n resource -->
+    <resource type="i18n" name="i18n" location="dreambrokerFeed"/>
+    
+    <!-- add our web resources -->
+    <web-resource key="dreambrokerFeed-resources" name="dreambrokerFeed Web Resources">
+        <dependency>com.atlassian.auiplugin:ajs</dependency>
+        
+        <resource type="download" name="dreambrokerFeed.css" location="/css/dreambrokerFeed.css"/>
+        <resource type="download" name="dreambrokerFeed.js" location="/js/dreambrokerFeed.js"/>
+        <resource type="download" name="images/" location="/images"/>
+
+        <context>dreambrokerFeed</context>
+    </web-resource>
+
+    <xhtml-macro name="dreambrokerfeed" class="com.ambientia.confluence.macros.macro.dreambroker" key="dreambroker-macro">
+        <description key="dreambroker.macro.desc" />
+            <category name="formatting" />
+            <parameters>
+                <parameter name="Url" type="string" required="true" desc="URL of Dreambroker channel JSON" />
+                <parameter name="Amount" type="int" required="true" desc="Amount of videos to show" />
+                <parameter name="DefaultCategory" type="string" required="false" desc="Default category to display" />
+                <parameter name="ShowFilter" type="boolean" required="false" desc="Show category fitler" />
+                <parameter name="ShowSearch" type="boolean" required="false" desc="Show search box" />
+
+            </parameters>
+
+    </xhtml-macro>
+    
+</atlassian-plugin>

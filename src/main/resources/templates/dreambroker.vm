@@ -1,0 +1,13 @@
+#requireResource("com.ambientia.confluence.macros.dreambrokerFeed:dreambrokerFeed-resources")
+
+<div id="dreambroker-feed">
+</div>
+
+    <fieldset class="parameters hidden">
+            <input type="hidden" id="dbJSONFeed" value="$jsonFeed">
+    </fieldset>
+
+
+<script>
+showDBFeed('dreambroker-feed', 'dbJSONFeed');
+</script>
